@@ -50,6 +50,8 @@ pt_outputs = pt_model(**pt_batch)
 pt_predictions = nn.functional.softmax(pt_outputs.logits, dim=-1)
 print(pt_predictions)
 
+# Save model
+
 pt_save_directory = "./pt_save_pretrained"
 tokenizer.save_pretrained(pt_save_directory)
 pt_model.save_pretrained(pt_save_directory)
