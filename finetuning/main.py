@@ -6,6 +6,8 @@ os.environ['HF_HOME'] = os.path.join(os.getcwd(), str('/'.join(['datasets','preb
 
 from transformers import AutoTokenizer, DataCollatorForLanguageModeling, AutoModelForCausalLM, TrainingArguments, Trainer
 from datasets import Dataset
+import torch
+from torch import nn
 
 df_train = pd.read_csv(os.path.join('finetuning', 'train.csv'))
 parent_codes = df_train.loc[df_train['Parent'].isna()]['Code.1']
@@ -30,14 +32,6 @@ def group_texts(examples):
         k: [t[i : i + block_size] for i in range(0, total_length, block_size)]
         for k, t in concatenated_examples.items()
     }
-    # concatenated_labels = {k: sum(tokenized_y_train[k], []) for k in tokenized_y_train.keys()}
-    # result_labels = {
-    #     k: [t[i : i + block_size] for i in range(0, total_length, block_size)]
-    #     for k, t in concatenated_labels.items()
-    # }
-    # result["labels"] = result_labels["input_ids"].copy()
-
-    # # result["labels"] = tokenized_x_train["input_ids"].copy()
     return result
 
 lm_dataset = Dataset.from_dict(tokenized_x_train)
@@ -59,12 +53,18 @@ trainer = Trainer(
     model=model,
     args=training_args,
     train_dataset=lm_dataset,
-    # eval_dataset=lm_dataset["test"],
+    eval_dataset=lm_dataset,
     data_collator=data_collator,
 )
 
 trainer.train()
 
 pt_save_directory = "./finetuning/save_pretrained"
+
 tokenizer.save_pretrained(pt_save_directory)
 model.save_pretrained(pt_save_directory)
+
+# from transformers import pipeline, set_seed
+# generator = pipeline('text-generation', model=pt_save_directory)
+# set_seed(42)
+# x_train.iloc[0]
