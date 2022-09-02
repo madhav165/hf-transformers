@@ -22,7 +22,7 @@ class CustomDataset_0(Dataset):
         return len(self.df)
 
     def __getitem__(self, idx):
-        data = self.df.iloc[idx]['SIV_LIT_DSC_TE']
+        data = str(self.df.iloc[idx]['SIV_LIT_DSC_TE']) + " of type " + str(self.df.iloc[idx]['GOODSDESCRPTN'])
         label = int(str(self.df.iloc[idx]['PRMRYTARNR'])[0])
         if self.transform:
             data = self.transform(data)
