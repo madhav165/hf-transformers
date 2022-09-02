@@ -18,4 +18,5 @@ class PassThroughTransformer(object):
         logits = out_state.logits
         data = torch.argmax(logits, dim=-1)
         data = torch.nn.functional.pad(data, (0,100,0,0), "constant", 0)[:,1:101]
+        data = data.type(torch.FloatTensor)
         return data
