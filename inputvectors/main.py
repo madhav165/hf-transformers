@@ -1,13 +1,14 @@
 from customdataset import CustomDataset_0
-from passthroughtransformer import PassThroughTransformer
+# from passthroughtransformer import PassThroughTransformer
+from getsentenceembedding import GetSentenceEmbedding
 import torch
 from torch.utils.data import random_split, DataLoader
 from torchvision.transforms import Lambda
-from neuralnet import NeuralNetwork
+from neuralnet_embedding import NeuralNetwork
 from torch import nn
 torch.manual_seed(0)
 
-dataset_0 = CustomDataset_0('./inputvectors/nldata', transform=PassThroughTransformer(),
+dataset_0 = CustomDataset_0('./inputvectors/nldata', transform=GetSentenceEmbedding(),
 target_transform=Lambda(lambda y: torch.zeros(10, dtype=torch.float).scatter_(0, torch.tensor(y), value=1)))
 train_size = int(0.8 * len(dataset_0))
 test_size = len(dataset_0) - train_size
@@ -17,18 +18,21 @@ train_dataloader = DataLoader(train_dataset, batch_size=64, shuffle=True, drop_l
 test_dataloader = DataLoader(test_dataset, batch_size=64, shuffle=True, drop_last=True)
 
 # train_features, train_labels = next(iter(train_dataloader))
-# train_features = train_features.type(torch.FloatTensor)
+# print(train_features[0])
+# print(train_labels[0])
 
-# print(f"Feature batch shape: {train_features.size()}")
-# print(f"Labels batch shape: {train_labels.size()}")
-# print(type(train_features[0]))
-# print(type(train_labels[0]))
+# # train_features = train_features.type(torch.FloatTensor)
 
-# X = train_features[0]
-# logits = model(X)
-# pred_probab = nn.Softmax(dim=1)(logits)
-# y_pred = pred_probab.argmax(1)
-# print(f"Predicted class: {y_pred}")
+# # print(f"Feature batch shape: {train_features.size()}")
+# # print(f"Labels batch shape: {train_labels.size()}")
+# # print(type(train_features[0]))
+# # print(type(train_labels[0]))
+
+# # X = train_features[0]
+# # logits = model(X)
+# # pred_probab = nn.Softmax(dim=1)(logits)
+# # y_pred = pred_probab.argmax(1)
+# # print(f"Predicted class: {y_pred}")
 
 
 
@@ -71,7 +75,7 @@ print(f"Using {device} device")
 model = NeuralNetwork().to(device)
 print(model)
 
-learning_rate = 1e-3
+learning_rate = 3e-2
 batch_size = 64
 epochs = 3
 

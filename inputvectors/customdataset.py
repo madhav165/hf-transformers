@@ -12,6 +12,8 @@ class CustomDataset_0(Dataset):
         for fl in self.flist:
             df_fl = pd.read_csv(os.path.join('inputvectors', 'nldata', fl))
             self.df = pd.concat([self.df, df_fl], axis=0)
+
+        # self.df = self.df.iloc[:1000]
         
         self.transform = transform
         self.target_transform = target_transform
