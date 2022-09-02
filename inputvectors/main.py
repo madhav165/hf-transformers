@@ -9,8 +9,9 @@ from torch import nn
 
 torch.manual_seed(1)
 
-dataset_0 = CustomDataset_0('./inputvectors/nldata', transform=GetSentenceEmbedding(),
-target_transform=Lambda(lambda y: torch.zeros(10, dtype=torch.float).scatter_(0, torch.tensor(y), value=1)))
+# dataset_0 = CustomDataset_0('./inputvectors/nldata', transform=GetSentenceEmbedding(),
+# target_transform=Lambda(lambda y: torch.zeros(10, dtype=torch.float).scatter_(0, torch.tensor(y), value=1)))
+dataset_0 = CustomDataset_0('./inputvectors/nldata', transform=GetSentenceEmbedding())
 train_size = int(0.8 * len(dataset_0))
 test_size = len(dataset_0) - train_size
 train_dataset, test_dataset = random_split(dataset_0, [train_size, test_size])
@@ -41,8 +42,9 @@ def train_loop(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
     for batch, (X, y) in enumerate(dataloader):
         # Compute prediction and loss
-        logits = model(X)
-        pred = nn.Softmax(dim=1)(logits)
+        # logits = model(X)
+        # pred = nn.Softmax(dim=1)(logits)
+        pred = model(X)
         loss = loss_fn(pred, y)
 
         # Backpropagation
@@ -61,10 +63,11 @@ def test_loop(dataloader, model, loss_fn):
 
     with torch.no_grad():
         for X, y in dataloader:
-            logits = model(X)
-            pred = nn.Softmax(dim=1)(logits)
+            # logits = model(X)
+            # pred = nn.Softmax(dim=1)(logits)
+            pred = model(X)
             test_loss += loss_fn(pred, y).item()
-            correct += (pred.argmax(1) == y.argmax(1)).type(torch.float).sum().item()
+            correct += (pred.argmax(1) == y).type(torch.float).sum().item()
 
     test_loss /= num_batches
     correct /= size
