@@ -6,7 +6,8 @@ from torch.utils.data import random_split, DataLoader
 from torchvision.transforms import Lambda
 from neuralnet_embedding import NeuralNetwork
 from torch import nn
-torch.manual_seed(0)
+
+torch.manual_seed(1)
 
 dataset_0 = CustomDataset_0('./inputvectors/nldata', transform=GetSentenceEmbedding(),
 target_transform=Lambda(lambda y: torch.zeros(10, dtype=torch.float).scatter_(0, torch.tensor(y), value=1)))
@@ -75,7 +76,7 @@ print(f"Using {device} device")
 model = NeuralNetwork().to(device)
 print(model)
 
-learning_rate = 3e-2
+learning_rate = 5e-2
 batch_size = 64
 epochs = 3
 
