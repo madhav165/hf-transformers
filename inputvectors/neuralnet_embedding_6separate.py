@@ -11,31 +11,43 @@ class NeuralNetwork(nn.Module):
         self.linear_relu_stack = nn.Sequential(
             nn.Linear(768, 4096),
             nn.ReLU(),
-            nn.Linear(4096, 64),
+            nn.Linear(4096, 512),
         )
         self.linear_relu_digit_0 = nn.Sequential(
             nn.ReLU(),
-            nn.Linear(64, 10)
+            nn.Linear(512, 64),
+            nn.ReLU(),
+            nn.Linear(64, 10),
         )
         self.linear_relu_digit_1 = nn.Sequential(
             nn.ReLU(),
-            nn.Linear(64, 10)
+            nn.Linear(512, 64),
+            nn.ReLU(),
+            nn.Linear(64, 10),
         )
         self.linear_relu_digit_2 = nn.Sequential(
             nn.ReLU(),
-            nn.Linear(64, 10)
+            nn.Linear(512, 64),
+            nn.ReLU(),
+            nn.Linear(64, 10),
         )
         self.linear_relu_digit_3 = nn.Sequential(
             nn.ReLU(),
-            nn.Linear(64, 10)
+            nn.Linear(512, 64),
+            nn.ReLU(),
+            nn.Linear(64, 10),
         )
         self.linear_relu_digit_4 = nn.Sequential(
             nn.ReLU(),
-            nn.Linear(64, 10)
+            nn.Linear(512, 64),
+            nn.ReLU(),
+            nn.Linear(64, 10),
         )
         self.linear_relu_digit_5 = nn.Sequential(
             nn.ReLU(),
-            nn.Linear(64, 10)
+            nn.Linear(512, 64),
+            nn.ReLU(),
+            nn.Linear(64, 10),
         )
 
     def forward(self, x):
