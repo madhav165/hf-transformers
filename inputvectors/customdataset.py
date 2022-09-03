@@ -24,7 +24,10 @@ class CustomDataset_0(Dataset):
     def __getitem__(self, idx):
         data = str(self.df.iloc[idx]['SIV_LIT_DSC_TE']) + " of type " + str(self.df.iloc[idx]['GOODSDESCRPTN'])
         # data = self.df.iloc[idx]['SIV_LIT_DSC_TE']
-        label = int(str(self.df.iloc[idx]['PRMRYTARNR'])[0])
+        try:
+            label = int(str(self.df.iloc[idx]['PRMRYTARNR'])[0])
+        except:
+            label = 0
         if self.transform:
             data = self.transform(data)
         if self.target_transform:

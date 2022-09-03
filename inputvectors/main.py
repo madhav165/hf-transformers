@@ -76,15 +76,17 @@ print(f"Using {device} device")
 model = NeuralNetwork().to(device)
 print(model)
 
-learning_rate = 5e-2
+learning_rate = 1e-2
 batch_size = 64
 epochs = 3
 
 loss_fn = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+scheduler = torch.optim.ExponentialLR(optimizer, gamma=0.7)
 
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
     train_loop(train_dataloader, model, loss_fn, optimizer)
     test_loop(test_dataloader, model, loss_fn)
+    scheduler.step()
 print("Done!")
