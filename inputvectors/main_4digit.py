@@ -1,17 +1,17 @@
-from customdataset import CustomDataset_0
+from customdataset0123 import CustomDataset_0123
 # from passthroughtransformer import PassThroughTransformer
 from getsentenceembedding import GetSentenceEmbedding
 import torch
 from torch.utils.data import random_split, DataLoader
 from torchvision.transforms import Lambda
-from neuralnet_embedding import NeuralNetwork
+from neuralnet_embedding_4digit import NeuralNetwork
 from torch import nn
 
 torch.manual_seed(1)
 
 # dataset_0 = CustomDataset_0('./inputvectors/nldata', transform=GetSentenceEmbedding(),
 # target_transform=Lambda(lambda y: torch.zeros(10, dtype=torch.float).scatter_(0, torch.tensor(y), value=1)))
-dataset_0 = CustomDataset_0('./inputvectors/nldata', transform=GetSentenceEmbedding())
+dataset_0 = CustomDataset_0123('./inputvectors/nldata', transform=GetSentenceEmbedding())
 train_size = int(0.8 * len(dataset_0))
 test_size = len(dataset_0) - train_size
 train_dataset, test_dataset = random_split(dataset_0, [train_size, test_size])
@@ -90,5 +90,5 @@ for t in range(epochs):
     train_loop(train_dataloader, model, loss_fn, optimizer)
     test_loop(test_dataloader, model, loss_fn)
     scheduler.step()
-torch.save(model.state_dict(), 'model_digit0_weights.pth')
+torch.save(model.state_dict(), 'model_4digit_weights.pth')
 print("Done!")
