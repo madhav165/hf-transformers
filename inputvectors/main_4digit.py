@@ -76,7 +76,7 @@ print(f"Using {device} device")
 model = NeuralNetwork().to(device)
 print(model)
 
-learning_rate = 1e-2
+learning_rate = 5e-2
 batch_size = 64
 epochs = 3
 momentum=0.9
