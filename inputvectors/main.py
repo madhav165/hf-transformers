@@ -79,10 +79,11 @@ print(model)
 learning_rate = 1e-2
 batch_size = 64
 epochs = 3
+momentum=0.9
 
 loss_fn = nn.CrossEntropyLoss()
-optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
-scheduler = torch.optim.ExponentialLR(optimizer, gamma=0.7)
+optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, momentum=momentum)
+scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.7)
 
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
