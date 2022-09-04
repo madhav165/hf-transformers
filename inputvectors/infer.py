@@ -25,7 +25,7 @@ model.load_state_dict(torch.load('./inputvectors/model_6separate_weights.pth'))
 # pred_0, pred_1, pred_2, pred_3, pred_4, pred_5 = model(test_features)
 # pred = torch.stack([pred_0, pred_1, pred_2, pred_3, pred_4, pred_5], dim=1)
 # act = torch.stack([test_labels_0, test_labels_1, test_labels_2, test_labels_3, test_labels_4, test_labels_5], dim=1)
-# print(torch.all(pred.argmax(2)==act,dim=1))
+# print((torch.all(pred.argmax(2)==act,dim=1)).type(torch.float).sum().item())
 
 size = len(test_dataloader.dataset)
 num_batches = len(test_dataloader)
