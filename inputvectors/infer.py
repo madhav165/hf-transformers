@@ -11,8 +11,6 @@ import pandas as pd
 
 torch.manual_seed(1)
 
-# dataset_0 = CustomDataset_0('./inputvectors/nldata', transform=GetSentenceEmbedding(),
-# target_transform=Lambda(lambda y: torch.zeros(10, dtype=torch.float).scatter_(0, torch.tensor(y), value=1)))
 dataset_0 = CustomDataset_6Separate('./inputvectors/nldata', transform=GetSentenceEmbedding())
 train_size = int(0.8 * len(dataset_0))
 test_size = len(dataset_0) - train_size
@@ -22,6 +20,12 @@ train_dataloader = DataLoader(train_dataset, batch_size=64, shuffle=True, drop_l
 test_dataloader = DataLoader(test_dataset, batch_size=64, shuffle=True, drop_last=True)
 model = torch.load('./inputvectors/model_6separate.pth')
 model.load_state_dict(torch.load('./inputvectors/model_6separate_weights.pth'))
+
+# test_features, test_labels_0, test_labels_1, test_labels_2, test_labels_3, test_labels_4, test_labels_5 = next(iter(test_dataloader))
+# pred_0, pred_1, pred_2, pred_3, pred_4, pred_5 = model(test_features)
+# pred = torch.stack([pred_0, pred_1, pred_2, pred_3, pred_4, pred_5], dim=1)
+# act = torch.stack([test_labels_0, test_labels_1, test_labels_2, test_labels_3, test_labels_4, test_labels_5], dim=1)
+# print(torch.all(pred.argmax(2)==act,dim=1))
 
 size = len(test_dataloader.dataset)
 num_batches = len(test_dataloader)
