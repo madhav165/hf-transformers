@@ -126,7 +126,7 @@ print(model)
 
 learning_rate = 1e-2
 batch_size = 64
-epochs = 3
+epochs = 7
 momentum=0.9
 
 loss_fn = nn.CrossEntropyLoss()
@@ -138,5 +138,6 @@ for t in range(epochs):
     train_loop(train_dataloader, model, loss_fn, optimizer)
     test_loop(test_dataloader, model, loss_fn)
     scheduler.step()
+torch.save(model, 'model_6separate.pth')
 torch.save(model.state_dict(), 'model_6separate_weights.pth')
 print("Done!")
