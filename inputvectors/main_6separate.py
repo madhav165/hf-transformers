@@ -138,6 +138,6 @@ for t in range(epochs):
     train_loop(train_dataloader, model, loss_fn, optimizer)
     test_loop(test_dataloader, model, loss_fn)
     scheduler.step()
-torch.save(model, 'model_6separate.pth')
-torch.save(model.state_dict(), 'model_6separate_weights.pth')
+torch.save(model, './inputvectors/model_6separate.pth')
+torch.save(model.state_dict(), './inputvectors/model_6separate_weights.pth')
 print("Done!")
