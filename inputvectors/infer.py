@@ -18,8 +18,8 @@ train_dataset, test_dataset = random_split(dataset_0, [train_size, test_size])
 
 train_dataloader = DataLoader(train_dataset, batch_size=64, shuffle=True, drop_last=True)
 test_dataloader = DataLoader(test_dataset, batch_size=64, shuffle=True, drop_last=True)
-model = torch.load('./inputvectors/model_6separate.pth')
-model.load_state_dict(torch.load('./inputvectors/model_6separate_weights.pth'))
+model = torch.load('./inputvectors/model_6together_scaled.pth')
+model.load_state_dict(torch.load('./inputvectors/model_6together_scaled_weights.pth'))
 
 # test_features, test_labels_0, test_labels_1, test_labels_2, test_labels_3, test_labels_4, test_labels_5 = next(iter(test_dataloader))
 # pred_0, pred_1, pred_2, pred_3, pred_4, pred_5 = model(test_features)
@@ -29,37 +29,26 @@ model.load_state_dict(torch.load('./inputvectors/model_6separate_weights.pth'))
 
 size = len(test_dataloader.dataset)
 num_batches = len(test_dataloader)
-
-pred_all = torch.Tensor()
-act_all = torch.Tensor()
+correct_6, correct_4, correct_2 = 0, 0, 0
 
 with torch.no_grad():
-    for test_features, test_labels_0, test_labels_1, test_labels_2, test_labels_3, test_labels_4, test_labels_5 in test_dataloader:
+    for test_features, y_0, y_1, y_2, y_3, y_4, y_5 in test_dataloader:
         pred_0, pred_1, pred_2, pred_3, pred_4, pred_5 = model(test_features)
-        pred_0_argmax = pred_0.argmax(1)
-        pred_1_argmax = pred_1.argmax(1)
-        pred_2_argmax = pred_2.argmax(1)
-        pred_3_argmax = pred_3.argmax(1)
-        pred_4_argmax = pred_4.argmax(1)
-        pred_5_argmax = pred_5.argmax(1)
-        pred = torch.stack([pred_0_argmax, pred_1_argmax, pred_2_argmax, pred_3_argmax, pred_4_argmax, pred_5_argmax], dim=1)
-        act = torch.stack([test_labels_0, test_labels_1, test_labels_2, test_labels_3, test_labels_4, test_labels_5], dim=1)
-        pred_all = torch.cat([pred_all, pred], dim=0)
-        act_all = torch.cat([act_all, act], dim=0)
-        print(pred_all.size())
+        pred_6 = torch.stack([pred_0, pred_1, pred_2, pred_3, pred_4, pred_5], dim=1)
+        act_6 = torch.stack([y_0, y_1, y_2, y_3, y_4, y_5], dim=1)
+        pred_4 = torch.stack([pred_0, pred_1, pred_2, pred_3], dim=1)
+        act_4 = torch.stack([y_0, y_1, y_2, y_3], dim=1)
+        pred_2 = torch.stack([pred_0, pred_1], dim=1)
+        act_2 = torch.stack([y_0, y_1], dim=1)
 
-pred_all = pd.DataFrame(pred_all.numpy())
-act_all = pd.DataFrame(act_all.numpy())
-pred_all['All'] = pred_all[0].astype(str)+pred_all[1].astype(str)+pred_all[2].astype(str)+pred_all[3].astype(str)+pred_all[4].astype(str)+pred_all[5].astype(str)
-pred_all['Chapter'] = pred_all[0].astype(str)+pred_all[1].astype(str)
-pred_all['Four digit'] = pred_all[0].astype(str)+pred_all[1].astype(str)+pred_all[2].astype(str)+pred_all[3].astype(str)
-act_all['All'] = act_all[0].astype(str)+act_all[1].astype(str)+act_all[2].astype(str)+act_all[3].astype(str)+act_all[4].astype(str)+act_all[5].astype(str)
-act_all['Chapter'] = act_all[0].astype(str)+act_all[1].astype(str)
-act_all['Four digit'] = act_all[0].astype(str)+act_all[1].astype(str)+act_all[2].astype(str)+act_all[3].astype(str)
+        correct_6 += (torch.all(pred_6.argmax(2)==act_6,dim=1)).type(torch.float).sum().item()
+        correct_4 += (torch.all(pred_4.argmax(2)==act_4,dim=1)).type(torch.float).sum().item()
+        correct_2 += (torch.all(pred_2.argmax(2)==act_2,dim=1)).type(torch.float).sum().item()
 
-print('All accuracy = {0:.2%}'.format((pred_all['All']==act_all['All']).sum()/len(pred_all)))
-print('Chapter accuracy = {0:.2%}'.format((pred_all['Chapter']==act_all['Chapter']).sum()/len(pred_all)))
-print('Four digit accuracy = {0:.2%}'.format((pred_all['Four digit']==act_all['Four digit']).sum()/len(pred_all)))
+correct_6 /= size
+correct_4 /= size
+correct_2 /= size
 
-pred_all.to_csv('./inputvectors/pred_all.csv', index=False)
-act_all.to_csv('./inputvectors/act_all.csv', index=False)
+print(f" Accuracy (6 digit): {(100*correct_6):>0.1f}%")
+print(f" Accuracy (4 digit): {(100*correct_4):>0.1f}%")
+print(f" Accuracy (2 digit): {(100*correct_2):>0.1f}%")
