@@ -80,43 +80,36 @@ def test_loop(dataloader, model, loss_fn):
     size = len(dataloader.dataset)
     num_batches = len(dataloader)
     test_loss_0, test_loss_1, test_loss_2, test_loss_3, test_loss_4, test_loss_5 = 0, 0, 0, 0, 0, 0
-    correct_0, correct_1, correct_2, correct_3, correct_4, correct_5 = 0, 0, 0, 0, 0, 0
+    correct = 0
 
     with torch.no_grad():
         for X, y_0, y_1, y_2, y_3, y_4, y_5 in dataloader:
             pred_0, pred_1, pred_2, pred_3, pred_4, pred_5 = model(X)
             test_loss_0 += loss_fn(pred_0, y_0).item()
-            correct_0 += (pred_0.argmax(1) == y_0).type(torch.float).sum().item()
             test_loss_1 += loss_fn(pred_1, y_1).item()
-            correct_1 += (pred_1.argmax(1) == y_1).type(torch.float).sum().item()
             test_loss_2 += loss_fn(pred_2, y_2).item()
-            correct_2 += (pred_2.argmax(1) == y_2).type(torch.float).sum().item()
             test_loss_3 += loss_fn(pred_3, y_3).item()
-            correct_3 += (pred_3.argmax(1) == y_3).type(torch.float).sum().item()
             test_loss_4 += loss_fn(pred_4, y_4).item()
-            correct_4 += (pred_4.argmax(1) == y_4).type(torch.float).sum().item()
             test_loss_5 += loss_fn(pred_5, y_5).item()
-            correct_5 += (pred_5.argmax(1) == y_5).type(torch.float).sum().item()
+            pred = torch.stack([pred_0, pred_1, pred_2, pred_3, pred_4, pred_5], dim=1)
+            y = torch.stack([y_0, y_1, y_2, y_3, y_4, y_5], dim=1)
+            correct += (torch.all(pred.argmax(2)==y,dim=1)).type(torch.float).sum().item()
 
     test_loss_0 /= num_batches
-    correct_0 /= size
     test_loss_1 /= num_batches
-    correct_1 /= size
     test_loss_2 /= num_batches
-    correct_2 /= size
     test_loss_3 /= num_batches
-    correct_3 /= size
     test_loss_4 /= num_batches
-    correct_4 /= size
     test_loss_5 /= num_batches
-    correct_5 /= size
+    correct /= size
     print(f"Test Error: \n")
-    print(f" Accuracy 0: {(100*correct_0):>0.1f}%, Avg loss 0: {test_loss_0:>8f} \n")
-    print(f" Accuracy 1: {(100*correct_1):>0.1f}%, Avg loss 1: {test_loss_1:>8f} \n")
-    print(f" Accuracy 2: {(100*correct_2):>0.1f}%, Avg loss 2: {test_loss_2:>8f} \n")
-    print(f" Accuracy 3: {(100*correct_3):>0.1f}%, Avg loss 3: {test_loss_3:>8f} \n")
-    print(f" Accuracy 4: {(100*correct_4):>0.1f}%, Avg loss 4: {test_loss_4:>8f} \n")
-    print(f" Accuracy 5: {(100*correct_5):>0.1f}%, Avg loss 5: {test_loss_5:>8f} \n")
+    print(f" Accuracy: {(100*correct):>0.1f}% \n")
+    print(f"Avg loss 0: {test_loss_0:>8f} \n")
+    print(f"Avg loss 1: {test_loss_1:>8f} \n")
+    print(f"Avg loss 2: {test_loss_2:>8f} \n")
+    print(f"Avg loss 3: {test_loss_0:>8f} \n")
+    print(f"Avg loss 4: {test_loss_0:>8f} \n")
+    print(f"Avg loss 5: {test_loss_0:>8f} \n")
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using {device} device")
@@ -138,6 +131,6 @@ for t in range(epochs):
     train_loop(train_dataloader, model, loss_fn, optimizer)
     test_loop(test_dataloader, model, loss_fn)
     scheduler.step()
-torch.save(model, './inputvectors/model_6separate.pth')
-torch.save(model.state_dict(), './inputvectors/model_6separate_weights.pth')
+torch.save(model, './inputvectors/samplemodel/model_6separate.pth')
+torch.save(model.state_dict(), './inputvectors/samplemodel/model_6separate_weights.pth')
 print("Done!")

@@ -4,7 +4,7 @@ from getsentenceembedding import GetSentenceEmbedding
 import torch
 from torch.utils.data import random_split, DataLoader
 from torchvision.transforms import Lambda
-from neuralnet_embedding_6separate import NeuralNetwork
+from neuralnet_embedding_6separate_v2 import NeuralNetwork
 from torch import nn
 
 torch.manual_seed(1)
@@ -46,7 +46,7 @@ def train_loop(dataloader, model, loss_fn, optimizer):
         # pred = torch.stack([pred_0, pred_1, pred_2, pred_3, pred_4, pred_5], dim=1)
         # y = torch.stack([y_0, y_1, y_2, y_3, y_4, y_5], dim=1)
 
-        loss = loss_fn(pred_0, y_0) + loss_fn(pred_1, y_1) + loss_fn(pred_2, y_2) + loss_fn(pred_3, y_3) + loss_fn(pred_4, y_4) + loss_fn(pred_5, y_5)
+        loss = 6*loss_fn(pred_0, y_0) + 5*loss_fn(pred_1, y_1) + 4*loss_fn(pred_2, y_2) + 3*loss_fn(pred_3, y_3) + 2*loss_fn(pred_4, y_4) + loss_fn(pred_5, y_5)
 
         # Backpropagation
         optimizer.zero_grad()
@@ -68,7 +68,7 @@ def test_loop(dataloader, model, loss_fn):
             pred_0, pred_1, pred_2, pred_3, pred_4, pred_5 = model(X)
             pred = torch.stack([pred_0, pred_1, pred_2, pred_3, pred_4, pred_5], dim=1)
             y = torch.stack([y_0, y_1, y_2, y_3, y_4, y_5], dim=1)
-            test_loss += loss_fn(pred_0, y_0).item() + loss_fn(pred_1, y_1).item() + loss_fn(pred_2, y_2).item() + loss_fn(pred_3, y_3).item() + loss_fn(pred_4, y_4).item() + loss_fn(pred_5, y_5).item()
+            test_loss += 6*loss_fn(pred_0, y_0).item() + 5*loss_fn(pred_1, y_1).item() + 4*loss_fn(pred_2, y_2).item() + 3*loss_fn(pred_3, y_3).item() + 2*loss_fn(pred_4, y_4).item() + loss_fn(pred_5, y_5).item()
 
             correct += (torch.all(pred.argmax(2)==y,dim=1)).type(torch.float).sum().item()
 
@@ -82,6 +82,8 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using {device} device")
 
 model = NeuralNetwork().to(device)
+# model = torch.load('./inputvectors/samplemodel/model_6together_scaled_v2.pth')
+# model.load_state_dict(torch.load('./inputvectors/samplemodel/model_6together_scaled_v2_weights.pth'))
 print(model)
 
 learning_rate = 3e-2
@@ -91,13 +93,13 @@ momentum=0.9
 
 loss_fn = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, momentum=momentum)
-scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.7)
+scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
 
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
     train_loop(train_dataloader, model, loss_fn, optimizer)
     test_loop(test_dataloader, model, loss_fn)
     scheduler.step()
-torch.save(model, './inputvectors/model_6together.pth')
-torch.save(model.state_dict(), './inputvectors/model_6together_weights.pth')
+torch.save(model, './inputvectors/model_6together_scaled_v2.pth')
+torch.save(model.state_dict(), './inputvectors/model_6together_scaled_v2_weights.pth')
 print("Done!")
