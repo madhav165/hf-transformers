@@ -4,7 +4,7 @@ from getsentenceembedding import GetSentenceEmbedding
 import torch
 from torch.utils.data import random_split, DataLoader
 from torchvision.transforms import Lambda
-from neuralnet_embedding_6separate_v2 import NeuralNetwork
+from neuralnet_embedding_6separate_v3 import NeuralNetwork
 from torch import nn
 
 torch.manual_seed(1)
@@ -46,7 +46,7 @@ def train_loop(dataloader, model, loss_fn, optimizer):
         # pred = torch.stack([pred_0, pred_1, pred_2, pred_3, pred_4, pred_5], dim=1)
         # y = torch.stack([y_0, y_1, y_2, y_3, y_4, y_5], dim=1)
 
-        loss = 6*loss_fn(pred_0, y_0) + 5*loss_fn(pred_1, y_1) + 4*loss_fn(pred_2, y_2) + 3*loss_fn(pred_3, y_3) + 2*loss_fn(pred_4, y_4) + loss_fn(pred_5, y_5)
+        loss = loss_fn(pred_0, y_0) + loss_fn(pred_1, y_1) + loss_fn(pred_2, y_2) + loss_fn(pred_3, y_3) + loss_fn(pred_4, y_4) + loss_fn(pred_5, y_5)
 
         # Backpropagation
         optimizer.zero_grad()
@@ -100,6 +100,6 @@ for t in range(epochs):
     train_loop(train_dataloader, model, loss_fn, optimizer)
     test_loop(test_dataloader, model, loss_fn)
     scheduler.step()
-torch.save(model, './inputvectors/model_6together_scaled_v2.pth')
-torch.save(model.state_dict(), './inputvectors/model_6together_scaled_v2_weights.pth')
+torch.save(model, './inputvectors/model_6together_scaled_v3.pth')
+torch.save(model.state_dict(), './inputvectors/model_6together_scaled_v3_weights.pth')
 print("Done!")
