@@ -53,9 +53,9 @@ class NeuralNetwork(nn.Module):
     def forward(self, x):
         x = self.flatten(x)
         logits_0 = self.linear_relu_digit_0(self.linear_relu_stack(x))
-        logits_1 = self.linear_relu_digit_1(torch.cat([self.linear_relu_stack(x), logits_0], dim=1))
-        logits_2 = self.linear_relu_digit_2(torch.cat([self.linear_relu_stack(x), logits_0, logits_1], dim=1))
-        logits_3 = self.linear_relu_digit_3(torch.cat([self.linear_relu_stack(x), logits_0, logits_1, logits_2], dim=1))
-        logits_4 = self.linear_relu_digit_4(torch.cat([self.linear_relu_stack(x), logits_0, logits_1, logits_2, logits_3], dim=1))
-        logits_5 = self.linear_relu_digit_5(torch.cat([self.linear_relu_stack(x), logits_0, logits_1, logits_2, logits_3, logits_4], dim=1))
+        logits_1 = self.linear_relu_digit_1(torch.cat([self.linear_relu_stack(x), nn.Softmax(dim=1)(logits_0)], dim=1))
+        logits_2 = self.linear_relu_digit_2(torch.cat([self.linear_relu_stack(x), nn.Softmax(dim=1)(logits_0), nn.Softmax(dim=1)(logits_1)], dim=1))
+        logits_3 = self.linear_relu_digit_3(torch.cat([self.linear_relu_stack(x), nn.Softmax(dim=1)(logits_0), nn.Softmax(dim=1)(logits_1), nn.Softmax(dim=1)(logits_2)], dim=1))
+        logits_4 = self.linear_relu_digit_4(torch.cat([self.linear_relu_stack(x), nn.Softmax(dim=1)(logits_0), nn.Softmax(dim=1)(logits_1), nn.Softmax(dim=1)(logits_2), nn.Softmax(dim=1)(logits_3)], dim=1))
+        logits_5 = self.linear_relu_digit_5(torch.cat([self.linear_relu_stack(x), nn.Softmax(dim=1)(logits_0), nn.Softmax(dim=1)(logits_1), nn.Softmax(dim=1)(logits_2), nn.Softmax(dim=1)(logits_3), nn.Softmax(dim=1)(logits_4)], dim=1))
         return logits_0, logits_1, logits_2, logits_3, logits_4, logits_5

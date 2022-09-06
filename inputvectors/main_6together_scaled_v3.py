@@ -1,10 +1,10 @@
-from customdataset_6separate import CustomDataset_6Separate
+from customdataset_6separate_v2 import CustomDataset_6Separate
 # from passthroughtransformer import PassThroughTransformer
 from getsentenceembedding import GetSentenceEmbedding
 import torch
 from torch.utils.data import random_split, DataLoader
 from torchvision.transforms import Lambda
-from neuralnet_embedding_6separate_v3 import NeuralNetwork
+from neuralnet_embedding_6separate_v4 import NeuralNetwork
 from torch import nn
 
 torch.manual_seed(1)
@@ -36,17 +36,15 @@ test_dataloader = DataLoader(test_dataset, batch_size=512, shuffle=True, drop_la
 # # y_pred = pred_probab.argmax(1)
 # # print(f"Predicted class: {y_pred}")
 
-
-
 def train_loop(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
-    for batch, (X, y_0, y_1, y_2, y_3, y_4, y_5) in enumerate(dataloader):
+    for batch, (X, y_0, y_1, y_2, y_3, y_4, y_5, y_6, y_7, y_8, y_9) in enumerate(dataloader):
         # Compute prediction and loss
-        pred_0, pred_1, pred_2, pred_3, pred_4, pred_5 = model(X)
+        pred_0, pred_1, pred_2, pred_3, pred_4, pred_5, pred_6, pred_7, pred_8, pred_9 = model(X)
         # pred = torch.stack([pred_0, pred_1, pred_2, pred_3, pred_4, pred_5], dim=1)
         # y = torch.stack([y_0, y_1, y_2, y_3, y_4, y_5], dim=1)
 
-        loss = loss_fn(pred_0, y_0) + loss_fn(pred_1, y_1) + loss_fn(pred_2, y_2) + loss_fn(pred_3, y_3) + loss_fn(pred_4, y_4) + loss_fn(pred_5, y_5)
+        loss = loss_fn(pred_0, y_0) + loss_fn(pred_1, y_1) + loss_fn(pred_2, y_2) + loss_fn(pred_3, y_3) + loss_fn(pred_4, y_4) + loss_fn(pred_5, y_5) + loss_fn(pred_6, y_6) + loss_fn(pred_7, y_7) + loss_fn(pred_8, y_8) + loss_fn(pred_9, y_9)
 
         # Backpropagation
         optimizer.zero_grad()
@@ -61,23 +59,27 @@ def train_loop(dataloader, model, loss_fn, optimizer):
 def test_loop(dataloader, model, loss_fn):
     size = len(dataloader.dataset)
     num_batches = len(dataloader)
-    test_loss, correct = 0, 0
+    test_loss, correct_6, correct_10 = 0, 0, 0
 
     print(f"Test Error: \n")
 
     with torch.no_grad():
-        for X, y_0, y_1, y_2, y_3, y_4, y_5 in dataloader:
-            pred_0, pred_1, pred_2, pred_3, pred_4, pred_5 = model(X)
-            pred = torch.stack([pred_0, pred_1, pred_2, pred_3, pred_4, pred_5], dim=1)
-            y = torch.stack([y_0, y_1, y_2, y_3, y_4, y_5], dim=1)
-            test_loss += 6*loss_fn(pred_0, y_0).item() + 5*loss_fn(pred_1, y_1).item() + 4*loss_fn(pred_2, y_2).item() + 3*loss_fn(pred_3, y_3).item() + 2*loss_fn(pred_4, y_4).item() + loss_fn(pred_5, y_5).item()
+        for X, y_0, y_1, y_2, y_3, y_4, y_5, y_6, y_7, y_8, y_9 in dataloader:
+            pred_0, pred_1, pred_2, pred_3, pred_4, pred_5, pred_6, pred_7, pred_8, pred_9 = model(X)
+            predict_6 = torch.stack([pred_0, pred_1, pred_2, pred_3, pred_4, pred_5], dim=1)
+            act_6 = torch.stack([y_0, y_1, y_2, y_3, y_4, y_5], dim=1)
+            predict_10 = torch.stack([pred_0, pred_1, pred_2, pred_3, pred_4, pred_5, pred_6, pred_7, pred_8, pred_9], dim=1)
+            act_10 = torch.stack([y_0, y_1, y_2, y_3, y_4, y_5, y_6, y_7, y_8, y_9], dim=1)
+            test_loss += loss_fn(pred_0, y_0).item() + loss_fn(pred_1, y_1).item() + loss_fn(pred_2, y_2).item() + loss_fn(pred_3, y_3).item() + loss_fn(pred_4, y_4).item() + loss_fn(pred_5, y_5).item() + loss_fn(pred_6, y_6).item() + loss_fn(pred_7, y_7).item() + loss_fn(pred_8, y_8).item() + loss_fn(pred_9, y_9).item()
 
-            correct += (torch.all(pred.argmax(2)==y,dim=1)).type(torch.float).sum().item()
+            correct_6 += (torch.all(predict_6.argmax(2)==act_6,dim=1)).type(torch.float).sum().item()
+            correct_10 += (torch.all(predict_10.argmax(2)==act_10,dim=1)).type(torch.float).sum().item()
 
     test_loss /= num_batches
-    correct /= size
+    correct_6 /= size
+    correct_10 /= size
 
-    print(f" Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+    print(f" Accuracy (6 digit): {(100*correct_6):>0.1f}%\n Accuracy (10 digit): {(100*correct_10):>0.1f}%\n Avg loss: {test_loss:>8f} \n")
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using {device} device")
@@ -100,6 +102,6 @@ for t in range(epochs):
     train_loop(train_dataloader, model, loss_fn, optimizer)
     test_loop(test_dataloader, model, loss_fn)
     scheduler.step()
-torch.save(model, './inputvectors/model_6together_scaled_v3.pth')
-torch.save(model.state_dict(), './inputvectors/model_6together_scaled_v3_weights.pth')
+torch.save(model, './inputvectors/samplemodel/model_6together_scaled_v4.pth')
+torch.save(model.state_dict(), './inputvectors/samplemodel/model_6together_scaled_v4_weights.pth')
 print("Done!")
