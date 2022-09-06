@@ -84,9 +84,9 @@ def test_loop(dataloader, model, loss_fn):
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using {device} device")
 
-model = NeuralNetwork().to(device)
-# model = torch.load('./inputvectors/samplemodel/model_6together_scaled_v2.pth')
-# model.load_state_dict(torch.load('./inputvectors/samplemodel/model_6together_scaled_v2_weights.pth'))
+# model = NeuralNetwork().to(device)
+model = torch.load('./inputvectors/samplemodel/model_6together_scaled_v4.pth')
+model.load_state_dict(torch.load('./inputvectors/samplemodel/model_6together_scaled_v4_weights.pth'))
 print(model)
 
 learning_rate = 3e-2
@@ -102,6 +102,6 @@ for t in range(epochs):
     train_loop(train_dataloader, model, loss_fn, optimizer)
     test_loop(test_dataloader, model, loss_fn)
     scheduler.step()
-torch.save(model, './inputvectors/samplemodel/model_6together_scaled_v4.pth')
-torch.save(model.state_dict(), './inputvectors/samplemodel/model_6together_scaled_v4_weights.pth')
+torch.save(model, './inputvectors/model_6together_scaled_v4.pth')
+torch.save(model.state_dict(), './inputvectors/model_6together_scaled_v4_weights.pth')
 print("Done!")
