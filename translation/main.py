@@ -5,6 +5,9 @@ os.environ['TRANSFORMERS_CACHE'] = os.path.join(os.getcwd(), str('/'.join(['mode
 os.environ['HF_HOME'] = os.path.join(os.getcwd(), str('/'.join(['datasets','prebuilt'])))
 
 from transformers import pipeline
+
+translator = pipeline("translation", model="Helsinki-NLP/opus-mt-fr-en")
+
 flist = []
 for (dirpath, dirnames, filenames) in os.walk(os.path.join('translation', 'data')):
     flist.extend(filenames)
@@ -15,12 +18,16 @@ for fl in flist:
     df = pd.concat([df, df_fl], axis=0)
 
 text = df['SIV_LIT_DSC_TE'].values.tolist()
-print(text)
+text = text[:150]
+texts = pd.DataFrame(text)
 
-language_identifier=pipeline("text-classification", model="papluca/xlm-roberta-base-language-detection")
-res = language_identifier(text)
-print(res)
+# language_identifier=pipeline("text-classification", model="papluca/xlm-roberta-base-language-detection")
+# res = language_identifier(text)
+# langs = pd.DataFrame(res)
 
-translator = pipeline("translation", model="Helsinki-NLP/opus-mt-fr-en")
 res = translator(text)
-print(res)
+trans = pd.DataFrame(res)
+
+# res = pd.concat([texts, langs, trans], axis=1)
+res = pd.concat([texts, trans], axis=1)
+res.to_csv('./translation/res2.csv')
