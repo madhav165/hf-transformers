@@ -2,6 +2,13 @@ import pandas as pd
 import torch
 import os
 import sys
+import logging
+
+logging.basicConfig(format='%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
+    datefmt='%Y-%m-%d:%H:%M:%S',
+    level=logging.INFO)
+log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
 
 abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
