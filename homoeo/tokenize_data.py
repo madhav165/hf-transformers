@@ -48,9 +48,16 @@ def reduce_long(
 # df2.to_csv('clarke_remedy_info_cleaned.csv', index=False)
 
 
-df = pd.read_csv('clarke_symptoms.csv', encoding = 'ISO-8859-1')
-df.drop(columns='URL', inplace=True)
+# df = pd.read_csv('clarke_symptoms.csv', encoding = 'ISO-8859-1')
+# df.drop(columns='URL', inplace=True)
+# df.columns=['title', 'heading', 'content']
+# df['content'] = df['content'].apply(lambda x: reduce_long(x, max_len=1024))
+# df['tokens'] = df['content'].apply(lambda x: count_tokens(x))
+# df.to_csv('clarke_symptoms_cleaned.csv', index=False)
+
+df = pd.read_csv('clarke_symptoms_cleaned_v2.csv', encoding = 'ISO-8859-1')
 df.columns=['title', 'heading', 'content']
 df['content'] = df['content'].apply(lambda x: reduce_long(x, max_len=1024))
 df['tokens'] = df['content'].apply(lambda x: count_tokens(x))
-df.to_csv('clarke_symptoms_cleaned.csv', index=False)
+df.to_csv('clarke_symptoms_cleaned_v2.csv', index=False)
+
