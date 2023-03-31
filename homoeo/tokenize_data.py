@@ -30,12 +30,7 @@ def reduce_long(
 
     return long_text
 
-    # Create a tuple of (title, section_name, content, number of tokens)
-    outputs += [(title, h, c, t) if t<max_len 
-                else (title, h, reduce_long(c, max_len), count_tokens(reduce_long(c,max_len))) 
-                    for h, c, t in zip(nheadings, ncontents, ncontent_ntokens)]
-    
-    return outputs
+
 
 # df = pd.read_csv('clarke_remedy_info.csv', encoding = 'ISO-8859-1')
 
@@ -55,9 +50,35 @@ def reduce_long(
 # df['tokens'] = df['content'].apply(lambda x: count_tokens(x))
 # df.to_csv('clarke_symptoms_cleaned.csv', index=False)
 
-df = pd.read_csv('clarke_symptoms_cleaned_v2.csv', encoding = 'ISO-8859-1')
-df.columns=['title', 'heading', 'content']
-df['content'] = df['content'].apply(lambda x: reduce_long(x, max_len=1024))
-df['tokens'] = df['content'].apply(lambda x: count_tokens(x))
-df.to_csv('clarke_symptoms_cleaned_v2.csv', index=False)
+# for homoeo
+# df = pd.read_csv('clarke_symptoms_cleaned_v2.csv', encoding = 'ISO-8859-1')
+# df.columns=['title', 'heading', 'content']
+# df['content'] = df['content'].apply(lambda x: reduce_long(x, max_len=1024))
+# df['tokens'] = df['content'].apply(lambda x: count_tokens(x))
+# df.to_csv('clarke_symptoms_cleaned_v2.csv', index=False)
 
+# for temple site
+max_len = 300
+df = pd.read_csv('temple_details.csv', encoding = 'ISO-8859-1')
+df['state'] = df['state'].apply(lambda x: str(x).replace(',','_').replace(' ', '_'))
+df['temple_name'] = df['temple_name'].apply(lambda x: str(x).replace(',','_').replace(' ', '_'))
+df = df[['state', 'temple_name', 'temple_details']]
+df.shape[0] #2441
+
+df2 = df['temple_details'].apply(lambda x: sent_tokenize(x.replace("\n", " "))).apply(pd.Series).stack().reset_index()
+df2 = df2.rename(columns={0: 'text'})
+df2['tokens'] = df2['text'].apply(count_tokens)
+df2['tot_tokens'] = df2.groupby(['level_0'])['tokens'].cumsum()
+df2['tot_grp'] = df2['tot_tokens'].apply(lambda x: x//max_len)
+df2 = df2.groupby(['level_0', 'tot_grp'])['text'].apply(' '.join).reset_index()
+df = df.reset_index()
+df2 = df2.merge(df[['index', 'state', 'temple_name']], left_on='level_0', right_on='index', how='left')
+df2 = df2[['state', 'temple_name', 'tot_grp', 'text']]
+df2 = df2.rename(columns={'tot_grp': 'sent_grp', 'text': 'temple_details'})
+df2['tokens'] = df2['temple_details'].apply(count_tokens)
+
+df2.to_csv('temple_details_v32.csv', index=False)
+
+df3 = pd.read_csv('temple_details_v32.csv')
+df3['tokens'] = df3['temple_details'].apply(count_tokens)
+df3.to_csv('temple_details_v33.csv', index=False)
