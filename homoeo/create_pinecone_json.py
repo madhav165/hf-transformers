@@ -22,9 +22,18 @@ for index, row in df.iterrows():
     d['metadata'] = d2
     j_arr.append(d)
 
-j = {}
-j['vectors'] = j_arr
-j['namespace'] = 'india_vectors'
 
-with open('india_vectors.json', 'w') as f:
+batch_size = 60
+for i in range(len(j_arr)//batch_size):
+    j = {}
+    j['vectors'] = j_arr[i*batch_size: (i+1)*batch_size]
+    j['namespace'] = 'india_vectors'
+    with open(f'india_vectors/india_vectors_{i}.json', 'w') as f:
+        json.dump(j, f)
+
+i+=1
+j = {}
+j['vectors'] = j_arr[i*batch_size:]
+j['namespace'] = 'india_vectors'
+with open(f'india_vectors/india_vectors_{i}.json', 'w') as f:
     json.dump(j, f)
